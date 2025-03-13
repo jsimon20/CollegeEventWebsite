@@ -13,7 +13,7 @@ if (!isLoggedIn()) {
 <head>
     <meta charset="UTF-8">
     <title>Dashboard</title>
-    <link rel="stylesheet" type="text/css" href="css/style.css">
+    <link rel="stylesheet" type="text/css" href="css/styles.css">
 </head>
 <body>
     <header>
@@ -23,13 +23,16 @@ if (!isLoggedIn()) {
         <h2>Dashboard</h2>
         <?php if (isAdmin()): ?>
             <a href="php/create_event.php"><button>Create Event</button></a>
+            <a href="php/manage_rso.php"><button>Manage RSOs</button></a>
         <?php endif; ?>
         <?php if (isSuperAdmin()): ?>
             <a href="php/approve_event.php"><button>Approve Events</button></a>
+            <a href="php/manage_universities.php"><button>Manage Universities</button></a>
         <?php endif; ?>
-        <a href="php/view_event.php"><button>View Events</button></a>
-        <a href="php/create_rso.php"><button>Create RSO</button></a>
-        <a href="php/join_rso.php"><button>Join RSO</button></a>
+        <?php if (isStudent()): ?>
+            <a href="php/view_event.php"><button>View Events</button></a>
+            <a href="php/join_rso.php"><button>Join RSO</button></a>
+        <?php endif; ?>
         <a href="php/logout.php"><button>Logout</button></a> <!-- Logout button added -->
     </div>
 </body>

@@ -1,31 +1,133 @@
 body {
-    font-family: Arial, sans-serif;
+    font-family: 'Roboto', sans-serif;
     background-color: #f4f4f4;
     margin: 0;
     padding: 0;
+    color: #333;
 }
 
 header {
-    background-color: #333;
+    background-color: #007BFF;
     color: #fff;
-    padding: 10px 0;
-    text-align: center;
+    padding: 20px 0;
+    text-align: left;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.header-content {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0 20px;
+}
+
+header h1 {
+    margin: 0;
+    font-size: 2em;
+}
+
+nav a {
+    color: #fff;
+    text-decoration: none;
+    margin: 0 15px;
+    font-size: 1.1em;
+}
+
+nav a:hover {
+    text-decoration: underline;
+}
+
+.menu {
+    position: relative;
+}
+
+.menu-icon {
+    font-size: 1.5em;
+    cursor: pointer;
+}
+
+.dropdown-menu {
+    display: none;
+    position: absolute;
+    right: 0;
+    background-color: #fff;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    border-radius: 5px;
+    overflow: hidden;
+}
+
+.dropdown-menu a {
+    display: block;
+    padding: 10px 20px;
+    color: #333;
+    text-decoration: none;
+}
+
+.dropdown-menu a:hover {
+    background-color: #f4f4f4;
 }
 
 .container {
     width: 80%;
-    margin: auto;
+    margin: 20px auto;
     overflow: hidden;
+    background: #fff;
+    padding: 20px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    border-radius: 8px;
+}
+
+h2, h3, h4 {
+    color: #007BFF;
 }
 
 button {
-    background-color: #333;
+    background-color: #007BFF;
     color: #fff;
     border: none;
     padding: 10px 20px;
     cursor: pointer;
+    border-radius: 5px;
+    font-size: 1em;
 }
 
 button:hover {
-    background-color: #555;
+    background-color: #0056b3;
+}
+
+input[type="text"], input[type="password"], input[type="email"], input[type="datetime-local"], textarea, select {
+    width: 100%;
+    padding: 10px;
+    margin: 10px 0;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    font-size: 1em;
+}
+
+label {
+    font-weight: bold;
+}
+
+.event, .rso {
+    border-bottom: 1px solid #ccc;
+    padding: 10px 0;
+}
+
+.pagination a {
+    color: #007BFF;
+    text-decoration: none;
+    padding: 8px 16px;
+    border: 1px solid #007BFF;
+    margin: 0 2px;
+    border-radius: 5px;
+}
+
+.pagination a.active {
+    background-color: #007BFF;
+    color: #fff;
+}
+
+.pagination a:hover {
+    background-color: #0056b3;
+    color: #fff;
 }
