@@ -27,7 +27,7 @@ if ($user_type == 'Student') {
     $query .= " OR (Publicity = 'RSO' AND RSOID IN (SELECT RSOID FROM RSO_Members WHERE UserID = $user_id))";
 }
 
-$query .= " ORDER BY EventTime ASC LIMIT $events_per_page OFFSET $offset";
+$query .= " ORDER BY DATE(EventTime) DESC, TIME(EventTime) ASC LIMIT $events_per_page OFFSET $offset";
 
 $result = $conn->query($query);
 

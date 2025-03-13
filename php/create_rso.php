@@ -13,14 +13,31 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     $description = $_POST['description'];
     $admin_id = $_SESSION['user_id'];
     $university_id = $_SESSION['university_id'];
+    $member_emails = $_POST['member_emails']; // Comma-separated list of member emails
 
-    $stmt = $conn->prepare("INSERT INTO RSOs (Name, Description, AdminID, UniversityID) VALUES (?, ?, ?, ?)");
-    $stmt->bind_param("ssii", $name, $description, $admin_id, $university_id);
+    // Check if there are at least 4 other students with the same email domain
+    $emails = explode(',', $member_emails);
+    $valid_emails = array_filter($emails, function($email) use ($university_id) {
+        return strpos($email, '@' . $university_id . '.edu') !== false;
+    });
 
-    if ($stmt->execute()) {
-        echo "RSO created successfully!";
+    if (count($valid_emails) >= 4) {
+        $stmt = $conn->prepare("INSERT INTO RSOs (Name, Description, AdminID, UniversityID) VALUES (?, ?, ?, ?)");
+        $stmt->bind_param("ssii", $name, $description, $admin_id, $university_id);
+
+        if ($stmt->execute()) {
+            $rso_id = $stmt->insert_id;
+            foreach ($valid_emails as $email) {
+                $stmt = $conn->prepare("INSERT INTO RSO_Members (RSOID, Email) VALUES (?, ?)");
+                $stmt->bind_param("is", $rso_id, $email);
+                $stmt->execute();
+            }
+            echo "RSO created successfully!";
+        } else {
+            echo "Error creating RSO: " . $stmt->error;
+        }
     } else {
-        echo "Error creating RSO: " . $stmt->error;
+        echo "Error: At least 4 other students with the same email domain are required.";
     }
 }
 ?>
@@ -40,6 +57,9 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
         <br>
         <label for="description">Description:</label>
         <textarea id="description" name="description" required></textarea>
+        <br>
+        <label for="member_emails">Member Emails (comma-separated):</label>
+        <input type="text" id="member_emails" name="member_emails" required>
         <br>
         <button type="submit">Create RSO</button>
     </form>
