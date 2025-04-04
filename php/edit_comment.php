@@ -11,7 +11,7 @@ if (!isLoggedIn()) {
 if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     $comment_id = $_POST['comment_id'];
     $comment_text = $_POST['comment_text'];
-    $rating = $_POST['rating'];
+    $rating = isset($_POST['rating']) ? $_POST['rating'] : null;
 
     $stmt = $conn->prepare("UPDATE Comments SET CommentText = ?, Rating = ? WHERE CommentID = ?");
     $stmt->bind_param("sii", $comment_text, $rating, $comment_id);

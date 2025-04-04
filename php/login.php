@@ -16,7 +16,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
         $_SESSION['user_id'] = $user_id;
         $_SESSION['user_type'] = $user_type;
         $_SESSION['university_id'] = $university_id;
-        header("Location: ../dashboard.php");
+        header("Location: ../index.php"); // Redirect to index.php instead of dashboard.php
         exit();
     } else {
         echo "Invalid username or password.";

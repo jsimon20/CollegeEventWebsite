@@ -131,3 +131,34 @@ label {
     background-color: #0056b3;
     color: #fff;
 }
+
+.comment {
+    border-bottom: 1px solid #ccc;
+    padding: 10px 0;
+}
+
+.comment p {
+    margin: 5px 0;
+}
+
+.comment form {
+    margin-top: 10px;
+}
+
+.comment textarea {
+    width: 100%;
+    padding: 10px;
+    margin: 10px 0;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    font-size: 1em;
+}
+
+.comment input[type="number"] {
+    width: 100%;
+    padding: 10px;
+    margin: 10px 0;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    font-size: 1em;
+}
