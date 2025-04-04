@@ -28,12 +28,14 @@ if (!isLoggedIn()) {
         <?php if (isSuperAdmin()): ?>
             <a href="php/approve_event.php"><button>Approve Events</button></a>
             <a href="php/manage_universities.php"><button>Manage Universities</button></a>
+            <a href="php/manage_users.php"><button>Manage Users</button></a>
+            <a href="php/view_all_events.php"><button>View All Events</button></a>
         <?php endif; ?>
         <?php if (isStudent()): ?>
             <a href="php/view_event.php"><button>View Events</button></a>
             <a href="php/join_rso.php"><button>Join RSO</button></a>
         <?php endif; ?>
-        <a href="php/logout.php"><button>Logout</button></a> <!-- Logout button added -->
+        <a href="php/logout.php"><button>Logout</button></a>
     </div>
 </body>
 </html>

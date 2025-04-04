@@ -3,13 +3,11 @@ session_start();
 require '../includes/db_connect.php';
 require '../includes/functions.php';
 
-if (!isLoggedIn()) {
-    header("Location: ../login.php");
-    exit;
-}
-
 $event_id = $_GET['event_id'];
-$user_id = $_SESSION['user_id'];
+
+// Check if the user is logged in
+$is_logged_in = isLoggedIn();
+$user_id = $is_logged_in ? $_SESSION['user_id'] : null;
 
 // Fetch event details
 $stmt = $conn->prepare("SELECT * FROM Events WHERE EventID = ?");
@@ -33,10 +31,13 @@ $average_rating = $rating_result->fetch_assoc()['AverageRating'];
 $average_rating = $average_rating !== null ? number_format($average_rating, 1) : 'No ratings yet';
 
 // Check if the user is attending the event
-$attending_stmt = $conn->prepare("SELECT * FROM Event_Attendees WHERE EventID = ? AND UserID = ?");
-$attending_stmt->bind_param("ii", $event_id, $user_id);
-$attending_stmt->execute();
-$is_attending = $attending_stmt->get_result()->num_rows > 0;
+$is_attending = false;
+if ($is_logged_in) {
+    $attending_stmt = $conn->prepare("SELECT * FROM Event_Attendees WHERE EventID = ? AND UserID = ?");
+    $attending_stmt->bind_param("ii", $event_id, $user_id);
+    $attending_stmt->execute();
+    $is_attending = $attending_stmt->get_result()->num_rows > 0;
+}
 
 // Check if the event has ended
 $event_ended = strtotime($event['EventTime']) < time();
@@ -86,10 +87,10 @@ $event_ended = strtotime($event['EventTime']) < time();
         <p><strong>Contact Email:</strong> <?php echo $event['ContactEmail']; ?></p>
         <p><strong>Publicity:</strong> <?php echo $event['Publicity']; ?></p>
         <p><strong>Average Rating:</strong> <?php echo $average_rating; ?> / 5</p>
-        <a href="view_event.php"><button>Back</button></a> <!-- Back button added -->
+        <a href="../index.php"><button>Back</button></a> <!-- Back button added -->
 
         <!-- Attend Event Button -->
-        <?php if (!$is_attending && !$event_ended && isStudent()): ?>
+        <?php if ($is_logged_in && !$is_attending && !$event_ended && isStudent()): ?>
             <form method="POST" action="attend_event.php">
                 <input type="hidden" name="event_id" value="<?php echo $event_id; ?>">
                 <button type="submit">Attend Event</button>
@@ -109,7 +110,7 @@ $event_ended = strtotime($event['EventTime']) < time();
                 <?php if ($comment['Type'] == 'Review'): ?>
                     <p><strong>Rating:</strong> <?php echo $comment['Rating']; ?> / 5</p>
                 <?php endif; ?>
-                <?php if ($comment['UserID'] == $user_id && !$event_ended): ?>
+                <?php if ($is_logged_in && $comment['UserID'] == $user_id && !$event_ended): ?>
                     <form method="POST" action="edit_comment.php">
                         <input type="hidden" name="comment_id" value="<?php echo $comment['CommentID']; ?>">
                         <textarea name="comment_text" required><?php echo $comment['CommentText']; ?></textarea>
@@ -123,7 +124,7 @@ $event_ended = strtotime($event['EventTime']) < time();
         <?php endwhile; ?>
 
         <!-- Add Comment Section -->
-        <?php if ($is_attending && !$event_ended): ?>
+        <?php if ($is_logged_in && $is_attending && !$event_ended): ?>
             <h3>Add a Comment</h3>
             <form method="POST" action="add_comment.php">
                 <input type="hidden" name="event_id" value="<?php echo $event_id; ?>">
@@ -134,7 +135,7 @@ $event_ended = strtotime($event['EventTime']) < time();
         <?php endif; ?>
 
         <!-- Add Review Section -->
-        <?php if ($is_attending && $event_ended): ?>
+        <?php if ($is_logged_in && $is_attending && $event_ended): ?>
             <h3>Add a Review</h3>
             <form method="POST" action="add_comment.php">
                 <input type="hidden" name="event_id" value="<?php echo $event_id; ?>">

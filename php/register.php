@@ -17,6 +17,18 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     $user_type = $_POST['user_type'];
     $university_id = $_POST['university_id'];
 
+    // Restrict student registration to .edu emails
+    if ($user_type === 'Student' && !preg_match('/@.+\.edu$/', $email)) {
+        echo "Error: Only .edu emails are allowed for student registration.";
+        exit;
+    }
+
+    // Prevent unauthorized admin creation
+    if ($user_type === 'Admin') {
+        echo "Error: Admin accounts must be approved by a Super Admin.";
+        exit;
+    }
+
     // Check if the UniversityID exists in the Universities table
     $stmt = $conn->prepare("SELECT UniversityID FROM Universities WHERE UniversityID = ?");
     $stmt->bind_param("i", $university_id);
@@ -40,7 +52,6 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
             echo "Error: " . $stmt->error;
         }
     } else {
-        // UniversityID does not exist, display error message
         echo "Error: The specified university is not supported.";
     }
     $stmt->close();
@@ -67,7 +78,6 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
             <select id="user_type" name="user_type" required>
                 <option value="Student">Student</option>
                 <option value="Admin">Admin</option>
-                <option value="SuperAdmin">Super Admin</option>
             </select><br>
             <label for="university_id">University:</label>
             <select id="university_id" name="university_id" required>

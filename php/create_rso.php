@@ -15,10 +15,10 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     $university_id = $_SESSION['university_id'];
     $member_emails = $_POST['member_emails']; // Comma-separated list of member emails
 
-    // Check if there are at least 4 other students with the same email domain
+    // Validate member emails
     $emails = explode(',', $member_emails);
     $valid_emails = array_filter($emails, function($email) use ($university_id) {
-        return strpos($email, '@' . $university_id . '.edu') !== false;
+        return preg_match('/@.+\.edu$/', $email) && strpos($email, '@' . $university_id . '.edu') !== false;
     });
 
     if (count($valid_emails) >= 4) {
