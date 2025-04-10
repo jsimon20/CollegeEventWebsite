@@ -23,12 +23,6 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
         exit;
     }
 
-    // Prevent unauthorized admin creation
-    if ($user_type === 'Admin') {
-        echo "Error: Admin accounts must be approved by a Super Admin.";
-        exit;
-    }
-
     // Check if the UniversityID exists in the Universities table
     $stmt = $conn->prepare("SELECT UniversityID FROM Universities WHERE UniversityID = ?");
     $stmt->bind_param("i", $university_id);
@@ -36,7 +30,6 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     $stmt->store_result();
 
     if ($stmt->num_rows > 0) {
-        // UniversityID exists, proceed with user registration
         $stmt->close();
         $stmt = $conn->prepare("INSERT INTO Users (Username, Password, Email, UserType, UniversityID) VALUES (?, ?, ?, ?, ?)");
         $stmt->bind_param("ssssi", $username, $password, $email, $user_type, $university_id);
@@ -46,7 +39,11 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
             $_SESSION['user_id'] = $stmt->insert_id;
             $_SESSION['user_type'] = $user_type;
             $_SESSION['university_id'] = $university_id;
-            header("Location: ../dashboard.php");
+            $_SESSION['Username'] = $username;
+            $_SESSION['UserType'] = $user_type;
+            $_SESSION['UniversityID'] = $university_id;
+
+            header("Location: ../index.php?view=day");
             exit();
         } else {
             echo "Error: " . $stmt->error;
@@ -70,25 +67,30 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
         <form method="POST" action="register.php">
             <label for="username">Username:</label>
             <input type="text" id="username" name="username" required><br>
+
             <label for="password">Password:</label>
             <input type="password" id="password" name="password" required><br>
+
             <label for="email">Email:</label>
             <input type="email" id="email" name="email" required><br>
+
             <label for="user_type">Role:</label>
             <select id="user_type" name="user_type" required>
                 <option value="Student">Student</option>
                 <option value="Admin">Admin</option>
             </select><br>
+
             <label for="university_id">University:</label>
             <select id="university_id" name="university_id" required>
                 <option value="">Select a university</option>
                 <?php foreach ($universities as $university): ?>
-                    <option value="<?php echo $university['UniversityID']; ?>"><?php echo $university['Name']; ?></option>
+                    <option value="<?= $university['UniversityID']; ?>"><?= htmlspecialchars($university['Name']); ?></option>
                 <?php endforeach; ?>
             </select><br>
+
             <button type="submit">Register</button>
         </form>
-        <p>Already have an account? <a href="login.php">Login here</a></p> <!-- Link to login page -->
+        <p>Already have an account? <a href="login.php">Login here</a></p>
     </div>
 </body>
 </html>

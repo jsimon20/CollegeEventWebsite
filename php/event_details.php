@@ -87,7 +87,7 @@ $event_ended = strtotime($event['EventTime']) < time();
         <p><strong>Contact Email:</strong> <?php echo $event['ContactEmail']; ?></p>
         <p><strong>Publicity:</strong> <?php echo $event['Publicity']; ?></p>
         <p><strong>Average Rating:</strong> <?php echo $average_rating; ?> / 5</p>
-        <a href="../index.php"><button>Back</button></a> <!-- Back button added -->
+        <a href="../index.php?view=day"><button>Back</button></a>
 
         <!-- Attend Event Button -->
         <?php if ($is_logged_in && !$is_attending && !$event_ended && isStudent()): ?>

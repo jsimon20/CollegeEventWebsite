@@ -23,7 +23,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
         } elseif ($user_type === 'Admin') {
             header("Location: ../dashboard.php"); // Redirect Admin to the dashboard
         } elseif ($user_type === 'Student') {
-            header("Location: ../index.php"); // Redirect Student to the main page
+            header("Location: ../index.php?view=day");
         } else {
             echo "Invalid user type.";
         }

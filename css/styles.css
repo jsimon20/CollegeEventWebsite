@@ -162,3 +162,127 @@ label {
     border-radius: 5px;
     font-size: 1em;
 }
+
+.tabs {
+    display: flex;
+    justify-content: center;
+    gap: 10px;
+    margin-bottom: 20px;
+}
+
+.tab-btn {
+    background-color: #eee;
+    border: none;
+    padding: 10px 20px;
+    cursor: pointer;
+    border-radius: 5px;
+    color: #333;
+    transition: background-color 0.3s;
+    font-weight: normal;
+}
+
+.tab-btn:hover {
+    background-color: #ccc;
+}
+
+.tab-btn.active {
+    background-color: #1a237e !important;
+    color: #fff !important;
+    font-weight: bold;
+}
+
+.tab-content {
+    max-width: 900px;
+    margin: auto;
+}
+
+.calendar-filter-form {
+    display: flex;
+    gap: 10px;
+    align-items: center;
+    margin-bottom: 15px;
+    flex-wrap: nowrap;
+    justify-content: flex-start;
+    white-space: nowrap;
+}
+
+.calendar-filter-form label {
+    font-weight: bold;
+    margin-right: 5px;
+}
+
+.small-select {
+    padding: 5px;
+    font-size: 0.9em;
+    width: 110px;
+    max-width: 110px;
+    white-space: nowrap;
+}
+
+.calendar-filter-form button {
+    padding: 6px 12px;
+    font-size: 0.9em;
+    white-space: nowrap;
+}
+
+.calendar {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 20px;
+    background: white;
+    table-layout: fixed;
+}
+
+.calendar th,
+.calendar td {
+    border: 1px solid #ccc;
+    padding: 6px;
+    height: 140px;
+    width: 14.28%;
+    font-size: 0.85em;
+    vertical-align: top;
+    position: relative;
+    overflow: hidden;
+}
+
+.calendar th {
+    background-color: #f0f0f0;
+    text-align: center;
+    font-weight: bold;
+}
+
+.calendar td strong {
+    display: block;
+    font-weight: bold;
+    margin-bottom: 4px;
+    color: #1a237e;
+}
+
+.calendar td .event-cell {
+    max-height: 90px;
+    overflow: hidden;
+    transition: max-height 0.3s ease-in-out;
+}
+
+.calendar td:hover .event-cell {
+    max-height: 1000px; /* expands on hover */
+    z-index: 10;
+    position: relative;
+    background: white;
+    box-shadow: 0 0 8px rgba(0,0,0,0.1);
+}
+
+.calendar td a {
+    display: block;
+    font-size: 0.8em;
+    text-decoration: none;
+    color: #007bff;
+    margin: 2px 0;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.calendar td a:hover {
+    text-decoration: underline;
+}
