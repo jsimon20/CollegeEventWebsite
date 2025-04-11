@@ -59,7 +59,7 @@ $events_result = $events_stmt->get_result();
             </div>
         <?php endwhile; ?>
         <a href="edit_profile.php"><button>Edit Profile</button></a>
-        <a href="../index.php"><button>Back to Dashboard</button></a>
+        <a href="../index.php?view=day"><button>Back to Homepage</button></a>
     </div>
 </body>
 </html>
