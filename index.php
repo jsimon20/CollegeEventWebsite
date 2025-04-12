@@ -36,8 +36,10 @@ $view = $_GET['view'] ?? 'featured';
                         <div class="menu-icon" onclick="toggleMenu()">&#9776;</div>
                         <div class="dropdown-menu" id="dropdownMenu">
                             <a href="php/user_profile.php">Account Settings</a>
-                            <a href="php/my_calendar.php">My Calendar</a>
-
+                            <?php if (isStudent()): ?>
+                                <a href="php/join_rso.php">Join RSOs</a>
+                                <a href="php/view_rsos.php">View RSOs</a>
+                            <?php endif; ?>
                             <?php if (isLoggedIn() && isAdmin()): ?>
                                 <a href="php/create_rso.php">Create RSO</a>
                                 <a href="php/create_event.php">Create Event</a>
