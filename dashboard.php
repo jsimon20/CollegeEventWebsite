@@ -25,16 +25,18 @@ if (!isLoggedIn()) {
             <a href="php/create_event.php"><button>Create Event</button></a>
             <a href="php/manage_rso.php"><button>Manage RSOs</button></a>
         <?php endif; ?>
+
         <?php if (isSuperAdmin()): ?>
             <a href="php/approve_event.php"><button>Approve Events</button></a>
             <a href="php/manage_universities.php"><button>Manage Universities</button></a>
-            <a href="php/manage_users.php"><button>Manage Users</button></a>
             <a href="php/view_all_events.php"><button>View All Events</button></a>
         <?php endif; ?>
+
         <?php if (isStudent()): ?>
             <a href="php/view_event.php"><button>View Events</button></a>
             <a href="php/join_rso.php"><button>Join RSO</button></a>
         <?php endif; ?>
+
         <a href="php/logout.php"><button>Logout</button></a>
     </div>
 </body>

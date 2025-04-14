@@ -1,88 +1,136 @@
 <?php
 require_once __DIR__ . '/../../includes/db_connect.php';
 require_once __DIR__ . '/../../includes/functions.php';
-date_default_timezone_set('America/New_York');
 
-$month = isset($_GET['m']) ? (int)$_GET['m'] : date('n');
-$year = isset($_GET['y']) ? (int)$_GET['y'] : date('Y');
+$user_id = $_SESSION['user_id'] ?? null;
+$user_type = $_SESSION['user_type'] ?? null;
+$user_university_id = $_SESSION['university_id'] ?? null;
 
-$first_day = mktime(0, 0, 0, $month, 1, $year);
-$days_in_month = date('t', $first_day);
-$month_name = date('F', $first_day);
-$start_day = date('w', $first_day); // 0 = Sunday
+// RSO membership list
+$rso_ids = [];
+if ($user_id) {
+    $stmt = $conn->prepare("SELECT RSOID FROM RSO_Members WHERE UserID = ?");
+    $stmt->bind_param("i", $user_id);
+    $stmt->execute();
+    $rso_result = $stmt->get_result();
+    while ($row = $rso_result->fetch_assoc()) {
+        $rso_ids[] = $row['RSOID'];
+    }
+}
 
-$start_date = "$year-" . str_pad($month, 2, '0', STR_PAD_LEFT) . "-01";
-$end_date = "$year-" . str_pad($month, 2, '0', STR_PAD_LEFT) . "-$days_in_month";
+// Month and year selection
+$month = isset($_GET['month']) ? intval($_GET['month']) : date('n');
+$year = isset($_GET['year']) ? intval($_GET['year']) : date('Y');
+$start_date = "$year-$month-01";
+$end_date = date("Y-m-t", strtotime($start_date));
 
-$query = "SELECT EventID, Name, EventTime FROM Events 
-          WHERE Publicity = 'Public' 
-          AND DATE(EventTime) BETWEEN '$start_date' AND '$end_date'";
+// Query for events this month with visibility checks
+$query = "SELECT * FROM Events WHERE DATE(EventTime) BETWEEN '$start_date' AND '$end_date'";
+if ($user_id) {
+    $query .= " AND (
+        Publicity = 'Public'
+        OR (Publicity = 'Private' AND UniversityID = $user_university_id)
+        " . (!empty($rso_ids) ? "OR (Publicity = 'RSO' AND RSOID IN (" . implode(',', $rso_ids) . "))" : "") . "
+    )";
+} else {
+    $query .= " AND Publicity = 'Public'";
+}
+$query .= " ORDER BY EventTime ASC";
 $result = $conn->query($query);
 
-$events_by_date = [];
+// Group events by date
+$events_by_day = [];
 while ($row = $result->fetch_assoc()) {
-    $date_key = date('Y-m-d', strtotime($row['EventTime']));
-    $events_by_date[$date_key][] = [
-        'id' => $row['EventID'],
-        'name' => $row['Name'],
-        'time' => date("g:i A", strtotime($row['EventTime']))
-    ];
+    $day = date('j', strtotime($row['EventTime']));
+    $events_by_day[$day][] = $row;
 }
 ?>
 
-<h2><?= $month_name . ' ' . $year ?> Calendar</h2>
-<form method="GET" action="index.php" class="calendar-filter-form">
+<h2><?= date('F Y', strtotime($start_date)) ?> Calendar</h2>
+<form method="GET" action="index.php">
     <input type="hidden" name="view" value="month">
-    <select name="m" id="m" class="small-select">
+    <select name="month">
         <?php for ($m = 1; $m <= 12; $m++): ?>
-            <option value="<?= $m ?>" <?= ($m == $month) ? 'selected' : '' ?>>
-                <?= date('F', mktime(0, 0, 0, $m, 10)) ?>
-            </option>
+            <option value="<?= $m ?>" <?= ($m == $month) ? 'selected' : '' ?>><?= date('F', mktime(0, 0, 0, $m, 1)) ?></option>
         <?php endfor; ?>
     </select>
-
-    <select name="y" id="y" class="small-select">
-        <?php for ($y = 2024; $y <= 2026; $y++): ?>
+    <select name="year">
+        <?php for ($y = date('Y') - 1; $y <= date('Y') + 1; $y++): ?>
             <option value="<?= $y ?>" <?= ($y == $year) ? 'selected' : '' ?>><?= $y ?></option>
         <?php endfor; ?>
     </select>
-
     <button type="submit">View</button>
 </form>
 
-<table class="calendar">
-    <tr>
-        <th>Sun</th><th>Mon</th><th>Tue</th><th>Wed</th>
-        <th>Thu</th><th>Fri</th><th>Sat</th>
-    </tr>
-    <tr>
+<div class="calendar-grid">
     <?php
-    $day_count = 0;
+    $first_day_of_month = date('w', strtotime($start_date));
+    $days_in_month = date('t', strtotime($start_date));
+    $day_counter = 1;
 
-    for ($i = 0; $i < $start_day; $i++) {
-        echo "<td></td>";
-        $day_count++;
+    echo "<div class='calendar-row'>";
+    // Print empty cells for first week
+    for ($i = 0; $i < $first_day_of_month; $i++) {
+        echo "<div class='calendar-cell empty'></div>";
     }
 
-    for ($day = 1; $day <= $days_in_month; $day++) {
-        $date_str = "$year-" . str_pad($month, 2, '0', STR_PAD_LEFT) . "-" . str_pad($day, 2, '0', STR_PAD_LEFT);
-        echo "<td><strong>$day</strong><div class='event-cell'>";
-
-        if (isset($events_by_date[$date_str])) {
-            foreach ($events_by_date[$date_str] as $event) {
-                echo "<a href='php/event_details.php?event_id={$event['id']}'>{$event['time']} – " . htmlspecialchars($event['name']) . "</a>";
+    for ($i = $first_day_of_month; $i < 7; $i++) {
+        echo "<div class='calendar-cell'>";
+        echo "<strong>$day_counter</strong>";
+        if (isset($events_by_day[$day_counter])) {
+            foreach ($events_by_day[$day_counter] as $event) {
+                echo "<div class='event-link'>";
+                echo "<a href='php/event_details.php?event_id={$event['EventID']}'>" . htmlspecialchars($event['Name']) . "</a>";
+                echo "</div>";
             }
         }
-
-        echo "</div></td>";
-        $day_count++;
-        if ($day_count % 7 == 0) echo "</tr><tr>";
+        echo "</div>";
+        $day_counter++;
     }
+    echo "</div>";
 
-    while ($day_count % 7 != 0) {
-        echo "<td></td>";
-        $day_count++;
+    while ($day_counter <= $days_in_month) {
+        echo "<div class='calendar-row'>";
+        for ($i = 0; $i < 7 && $day_counter <= $days_in_month; $i++) {
+            echo "<div class='calendar-cell'>";
+            echo "<strong>$day_counter</strong>";
+            if (isset($events_by_day[$day_counter])) {
+                foreach ($events_by_day[$day_counter] as $event) {
+                    echo "<div class='event-link'>";
+                    echo "<a href='php/event_details.php?event_id={$event['EventID']}'>" . htmlspecialchars($event['Name']) . "</a>";
+                    echo "</div>";
+                }
+            }
+            echo "</div>";
+            $day_counter++;
+        }
+        echo "</div>";
     }
     ?>
-    </tr>
-</table>
+</div>
+
+<style>
+.calendar-grid {
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+}
+.calendar-row {
+    display: flex;
+}
+.calendar-cell {
+    flex: 1;
+    min-height: 100px;
+    border: 1px solid #ccc;
+    padding: 5px;
+    box-sizing: border-box;
+}
+.calendar-cell.empty {
+    background-color: #f0f0f0;
+}
+.event-link a {
+    display: block;
+    font-size: 0.9em;
+    color: #0077cc;
+}
+</style>

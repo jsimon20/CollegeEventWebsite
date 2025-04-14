@@ -16,10 +16,9 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
         $domain = $raw_domain . '.edu';
         $location = $_POST['location'];
         $description = $_POST['description'];
-        $student_count = $_POST['student_count'];
 
-        $stmt = $conn->prepare("INSERT INTO Universities (Name, Domain, Location, Description, StudentCount) VALUES (?, ?, ?, ?, ?)");
-        $stmt->bind_param("ssssi", $name, $domain, $location, $description, $student_count);
+        $stmt = $conn->prepare("INSERT INTO Universities (Name, Domain, Location, Description) VALUES (?, ?, ?, ?)");
+        $stmt->bind_param("ssss", $name, $domain, $location, $description);
         if ($stmt->execute()) {
             echo "University added successfully!";
         } else {
@@ -32,10 +31,9 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
         $domain = $raw_domain . '.edu';
         $location = $_POST['location'];
         $description = $_POST['description'];
-        $student_count = $_POST['student_count'];
 
-        $stmt = $conn->prepare("UPDATE Universities SET Name = ?, Domain = ?, Location = ?, Description = ?, StudentCount = ? WHERE UniversityID = ?");
-        $stmt->bind_param("ssssii", $name, $domain, $location, $description, $student_count, $university_id);
+        $stmt = $conn->prepare("UPDATE Universities SET Name = ?, Domain = ?, Location = ?, Description = ? WHERE UniversityID = ?");
+        $stmt->bind_param("ssssi", $name, $domain, $location, $description, $university_id);
         if ($stmt->execute()) {
             echo "University updated successfully!";
         } else {
@@ -83,9 +81,6 @@ $result = $conn->query($query);
             <label for="description">Description:</label>
             <textarea id="description" name="description" required></textarea><br>
 
-            <label for="student_count">Student Count:</label>
-            <input type="number" id="student_count" name="student_count" required><br>
-
             <button type="submit" name="add_university">Add University</button>
         </form>
 
@@ -93,28 +88,28 @@ $result = $conn->query($query);
         <?php while ($university = $result->fetch_assoc()): ?>
             <div class="university">
                 <form method="POST" action="manage_universities.php">
-                    <input type="hidden" name="university_id" value="<?php echo $university['UniversityID']; ?>">
+                    <input type="hidden" name="university_id" value="<?= $university['UniversityID']; ?>">
 
                     <label for="name">Name:</label>
-                    <input type="text" name="name" value="<?php echo $university['Name']; ?>" required><br>
+                    <input type="text" name="name" value="<?= htmlspecialchars($university['Name']); ?>" required><br>
 
                     <label for="domain">Domain (without .edu):</label>
-                    <input type="text" name="domain" value="<?php echo str_replace('.edu', '', $university['Domain']); ?>" required><br>
+                    <input type="text" name="domain" value="<?= htmlspecialchars(str_replace('.edu', '', $university['Domain'])); ?>" required><br>
 
                     <label for="location">Location:</label>
-                    <input type="text" name="location" value="<?php echo $university['Location']; ?>" required><br>
+                    <input type="text" name="location" value="<?= htmlspecialchars($university['Location']); ?>" required><br>
 
                     <label for="description">Description:</label>
-                    <textarea name="description" required><?php echo $university['Description']; ?></textarea><br>
-
-                    <label for="student_count">Student Count:</label>
-                    <input type="number" name="student_count" value="<?php echo $university['StudentCount']; ?>" required><br>
+                    <textarea name="description" required><?= htmlspecialchars($university['Description']); ?></textarea><br>
 
                     <button type="submit" name="edit_university">Edit</button>
                     <button type="submit" name="delete_university">Delete</button>
                 </form>
             </div>
         <?php endwhile; ?>
+
+        <br>
+        <a href="../dashboard.php"><button>Back to Dashboard</button></a>
     </div>
 </body>
 </html>

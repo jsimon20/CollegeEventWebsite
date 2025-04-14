@@ -85,9 +85,12 @@ if ($is_admin && $rso_id) {
     <p><strong>Date & Time:</strong>
         <?php
         $start = strtotime($event['EventTime']);
-        $end = strtotime($event['EndTime']);
         echo date("F j, Y, g:i A", $start);
-        if ($end) echo " to " . date("F j, Y, g:i A", $end);
+
+        if (!empty($event['EndTime'])) {
+            $end = strtotime($event['EndTime']);
+            echo " to " . date("F j, Y, g:i A", $end);
+        }
         ?>
     </p>
     <p><strong>Location:</strong>

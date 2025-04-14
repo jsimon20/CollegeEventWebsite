@@ -60,7 +60,6 @@ $view = $_GET['view'] ?? 'featured';
             <button class="tab-btn <?php if($view == 'week') echo 'active'; ?>" onclick="switchView('week')">Week</button>
             <button class="tab-btn <?php if($view == 'upcoming') echo 'active'; ?>" onclick="switchView('upcoming')">Upcoming</button>
             <button class="tab-btn <?php if($view == 'month') echo 'active'; ?>" onclick="switchView('month')">Month</button>
-            <button class="tab-btn <?php if($view == 'year') echo 'active'; ?>" onclick="switchView('year')">Year</button>
         </div>
     </header>
 
@@ -79,11 +78,8 @@ $view = $_GET['view'] ?? 'featured';
             case 'month':
                 include 'php/views/month.php';
                 break;
-            case 'year':
-                include 'php/views/year.php';
-                break;
             default:
-                include 'php/views/featured.php';
+                include 'php/views/day.php';
         }
         ?>
     </div>

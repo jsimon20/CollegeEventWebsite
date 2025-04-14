@@ -23,8 +23,8 @@ $rsos_stmt->bind_param("i", $user_id);
 $rsos_stmt->execute();
 $rsos_result = $rsos_stmt->get_result();
 
-// Fetch event history
-$events_stmt = $conn->prepare("SELECT Events.Name, Events.EventTime, Comments.Rating FROM Comments JOIN Events ON Comments.EventID = Events.EventID WHERE Comments.UserID = ?");
+// Fetch event history with EventID included
+$events_stmt = $conn->prepare("SELECT Events.EventID, Events.Name, Events.EventTime, Comments.Rating FROM Comments JOIN Events ON Comments.EventID = Events.EventID WHERE Comments.UserID = ?");
 $events_stmt->bind_param("i", $user_id);
 $events_stmt->execute();
 $events_result = $events_stmt->get_result();
@@ -43,6 +43,7 @@ $events_result = $events_stmt->get_result();
         <p><strong>Username:</strong> <?php echo $user['Username']; ?></p>
         <p><strong>Email:</strong> <?php echo $user['Email']; ?></p>
         <p><strong>Role:</strong> <?php echo $user['UserType']; ?></p>
+
         <h3>Joined RSOs</h3>
         <?php while ($rso = $rsos_result->fetch_assoc()): ?>
             <div class="rso">
@@ -50,14 +51,20 @@ $events_result = $events_stmt->get_result();
                 <p><?php echo $rso['Description']; ?></p>
             </div>
         <?php endwhile; ?>
+
         <h3>Event History</h3>
         <?php while ($event = $events_result->fetch_assoc()): ?>
             <div class="event">
-                <h4><?php echo $event['Name']; ?></h4>
+                <h4>
+                    <a href="event_details.php?event_id=<?= $event['EventID']; ?>">
+                        <?php echo htmlspecialchars($event['Name']); ?>
+                    </a>
+                </h4>
                 <p><strong>Date and Time:</strong> <?php echo date("F j, Y, g:i A", strtotime($event['EventTime'])); ?></p>
                 <p><strong>Rating:</strong> <?php echo $event['Rating']; ?> / 5</p>
             </div>
         <?php endwhile; ?>
+
         <a href="edit_profile.php"><button>Edit Profile</button></a>
         <a href="../index.php?view=day"><button>Back to Homepage</button></a>
     </div>

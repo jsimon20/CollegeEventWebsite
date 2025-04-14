@@ -21,7 +21,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
         if ($user_type === 'SuperAdmin') {
             header("Location: ../dashboard.php"); // Redirect Super Admin to the dashboard
         } elseif ($user_type === 'Admin') {
-            header("Location: ../dashboard.php"); // Redirect Admin to the dashboard
+            header("Location: ../index.php?view=day"); // Redirect Admin to the dashboard
         } elseif ($user_type === 'Student') {
             header("Location: ../index.php?view=day");
         } else {
